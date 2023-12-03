@@ -1,6 +1,14 @@
-const AddProduct = () => {
+import ProductForm from "@/app/components/forms/ProductForm";
+import {revalidatePath} from "next/cache";
+
+
+const AddProduct = (formData: FormData) => {
+    const revalidateProducts = async () => {
+        "use server"
+        revalidatePath('/');
+    }
     return (
-        <div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea, sapiente!</div>
+        <ProductForm/>
     )
 }
 
