@@ -2,10 +2,12 @@
 
 import {SubmitHandler, useForm} from "react-hook-form";
 import Link from "next/link";
-import {revalidateProducts} from "@/app/actions";
+import {revalidateProducts} from "@/app/utils";
+import Spinner from "@/app/components/UI/Spinner";
 
 interface Inputs {
     products: string[];
+    endpointError?: string;
 }
 
 interface productType {
@@ -23,7 +25,8 @@ const ProductsList = ({products}: { products: productType[] }) => {
         register,
         handleSubmit,
         watch,
-        formState: {errors},
+        setError,
+        formState: {errors, isSubmitting},
     } = useForm<Inputs>();
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -33,28 +36,33 @@ const ProductsList = ({products}: { products: productType[] }) => {
             formData.append('idsToDelete[]', productIds[i]);
         }
         try {
-            await fetch('http://localhost:8000/api/products/delete', {
+            await fetch('https://nika-scandi-assignment.000webhostapp.com/api/products/delete', {
                 method: "POST", body: formData
             })
-        } catch (err) {
-            console.log(err)
+        } catch (err: any) {
+            setError('endpointError', {message: err.message});
         }
         await revalidateProducts();
     }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
                 <h2 className="text-4xl font-bold tracking-tight">Product List</h2>
                 <div className="flex space-x-4">
                     <Link href='/addproduct' className="text-xl border p-3 rounded-md">ADD</Link>
-                    <button disabled={!watch('products')?.length} id="delete-product-btn"
-                            className="text-xl border p-3 rounded-md">MASS DELETE
+                    <button disabled={!watch('products')?.length}
+                            id="delete-product-btn"
+                            className="flex items-center gap-2 text-xl border p-3 rounded-md"
+                    >
+                        <div className={`transition-all w-${isSubmitting ? '6' : '0'} h-6`}><Spinner/></div>
+                        MASS DELETE
                     </button>
                 </div>
             </div>
+            {errors.endpointError && <p className='text-red-700'>{errors.endpointError.message}</p>}
             <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                {products.map((product) => (
+                {products.length > 0 && products.map((product) => (
                     <div key={product.id} className="group relative rounded-lg border p-4 flex ">
                         <input
                             id="comments"

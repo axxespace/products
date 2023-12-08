@@ -3,10 +3,6 @@ import {revalidatePath} from "next/cache";
 
 
 const AddProduct = (formData: FormData) => {
-    const revalidateProducts = async () => {
-        "use server"
-        revalidatePath('/');
-    }
     return (
         <ProductForm/>
     )
