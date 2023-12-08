@@ -47,13 +47,13 @@ const ProductsList = ({products}: { products: productType[] }) => {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col md:flex-row gap-5 justify-between items-center">
-                <h2 className="text-4xl font-bold tracking-tight">Product List</h2>
+            <div className="flex flex-col md:flex-row gap-5 justify-between items-center text-white">
+                <h2 className="text-4xl font-bold tracking-tight text-white">Product List</h2>
                 <div className="flex space-x-4">
                     <Link href='/addproduct' className="text-xl border p-3 rounded-md">ADD</Link>
                     <button disabled={!watch('products')?.length}
                             id="delete-product-btn"
-                            className="flex items-center gap-2 text-xl border p-3 rounded-md"
+                            className="flex items-center gap-2 text-xl border p-3 rounded-md "
                     >
                         <div className={`transition-all ${isSubmitting ? 'w-6' : 'w-0'} h-6`}><Spinner/></div>
                         MASS DELETE
@@ -72,7 +72,7 @@ const ProductsList = ({products}: { products: productType[] }) => {
                             value={product.id}
                             className="delete-checkbox h-4 w-4 rounded-lg border-gray-300 text-indigo-600 focus:ring-indigo-600"
                         />
-                        <div className="flex flex-col items-center w-full pr-4">
+                        <div className="flex flex-col items-center w-full pr-4 text-white">
                             <h3 className="font-semibold">
                                 {product.sku}
                             </h3>

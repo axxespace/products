@@ -12,7 +12,7 @@ type FormInputProps = {
 const FormInput = forwardRef<HTMLInputElement, FormInputProps>((props, ref) => {
     return (
         <div className='my-3'>
-            <p>{props.label}</p>
+            <p className='text-white'>{props.label}</p>
             <input
                 ref={ref}
                 {...props}

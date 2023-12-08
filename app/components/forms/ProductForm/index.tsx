@@ -74,7 +74,7 @@ const ProductForm = () => {
     return (
         <>
             <form id="product_form" className='mt-8' onSubmit={handleSubmit(onSubmit)}>
-                <div className="flex flex-col gap-5 md:flex-row justify-between items-center">
+                <div className="flex flex-col gap-5 md:flex-row justify-between items-center text-white">
                     <h2 className="text-4xl font-bold tracking-tight">Product Add</h2>
                     <div className="flex space-x-4">
                         <button className="flex items-center gap-2 text-xl border p-3 rounded-md">
@@ -97,7 +97,7 @@ const ProductForm = () => {
                                label='Price:'
                                id='price' error={errors.price}/>
 
-                    <div className='my-3'>
+                    <div className='my-3 text-white'>
                         <p>Product type:</p>
                         <select
                             onChange={(event) => {
