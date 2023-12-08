@@ -6,7 +6,7 @@ import {revalidateProducts} from "@/app/utils";
 import Spinner from "@/app/components/UI/Spinner";
 
 interface Inputs {
-    products: string[];
+    products: string[] | string;
     endpointError?: string;
 }
 
@@ -30,7 +30,14 @@ const ProductsList = ({products}: { products: productType[] }) => {
     } = useForm<Inputs>();
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
-        const productIds = data.products;
+        const productIds: string[] = [];
+        console.log(data.products);
+        if (typeof data.products === 'string') {
+            productIds.push(data.products);
+        }
+        else {
+            productIds.concat(data.products);
+        }
         const formData = new FormData();
         for (let i = 0; i < productIds.length; i++) {
             formData.append('idsToDelete[]', productIds[i]);
