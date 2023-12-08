@@ -36,7 +36,7 @@ const ProductsList = ({products}: { products: productType[] }) => {
             formData.append('idsToDelete[]', productIds[i]);
         }
         try {
-            await fetch('https://nika-scandi-assignment.000webhostapp.com/api/products/delete', {
+            await fetch(`${process.env.NEXT_PUBLIC_DB_HOST}/api/products/delete`, {
                 method: "POST", body: formData
             })
         } catch (err: any) {
@@ -55,7 +55,7 @@ const ProductsList = ({products}: { products: productType[] }) => {
                             id="delete-product-btn"
                             className="flex items-center gap-2 text-xl border p-3 rounded-md"
                     >
-                        <div className={`transition-all w-${isSubmitting ? '6' : '0'} h-6`}><Spinner/></div>
+                        <div className={`transition-all ${isSubmitting ? 'w-6' : 'w-0'} h-6`}><Spinner/></div>
                         MASS DELETE
                     </button>
                 </div>

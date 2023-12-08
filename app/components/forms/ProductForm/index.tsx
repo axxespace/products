@@ -52,7 +52,7 @@ const ProductForm = () => {
             formData.append('dimensions', `${height}x${width}x${length}`);
         }
         try {
-            const res = await fetch('https://nika-scandi-assignment.000webhostapp.com/api/products/add', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_DB_HOST}/api/products/add`, {
                 method: "POST", body: formData
             });
             if (!res.ok) {
@@ -78,7 +78,7 @@ const ProductForm = () => {
                     <h2 className="text-4xl font-bold tracking-tight">Product Add</h2>
                     <div className="flex space-x-4">
                         <button className="flex items-center gap-2 text-xl border p-3 rounded-md">
-                            <div className={`transition-all w-${isSubmitting ? '6' : '0'} h-6`}><Spinner/></div>
+                            <div className={`transition-all ${isSubmitting ? 'w-6' : 'w-0'} h-6`}><Spinner/></div>
                             SAVE
                         </button>
                         <Link href='/' className="text-xl border p-3 rounded-md">
