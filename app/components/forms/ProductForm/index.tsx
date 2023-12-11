@@ -17,7 +17,7 @@ interface Inputs {
   height?: number;
   width?: number;
   length?: number;
-  endpointError?: string;
+  error?: string;
 }
 
 enum ProductTypes {
@@ -28,19 +28,21 @@ enum ProductTypes {
 
 const ProductForm = () => {
   const router = useRouter();
-  const [selectedProduct, setSelectedProduct] = useState<ProductTypes>(
-    ProductTypes.Disc,
-  );
+  const [selectedProduct, setSelectedProduct] = useState<ProductTypes>();
   const {
     register,
     handleSubmit,
     watch,
-    setError,
     clearErrors,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    if (!selectedProduct) {
+      setError("error", { message: "Select a product type" });
+      return;
+    }
     const { name, weight, height, size, sku, length, price, width } = data;
     const formData = new FormData();
     formData.append("sku", sku);
@@ -74,13 +76,13 @@ const ProductForm = () => {
         router.push("/");
       }
     } catch (err: any) {
-      setError("endpointError", { message: err.message });
+      setError("error", { message: err.message });
     }
   };
 
   useEffect(() => {
-    clearErrors("endpointError");
-  }, [watch("sku")]);
+    clearErrors("error");
+  }, [watch("sku"), selectedProduct]);
 
   return (
     <>
@@ -92,16 +94,22 @@ const ProductForm = () => {
         <div className="flex flex-col gap-5 md:flex-row justify-between items-center text-white">
           <h2 className="text-4xl font-bold tracking-tight">Product Add</h2>
           <div className="flex space-x-4">
-            <button className="flex items-center gap-2 text-xl border p-3 rounded-md">
-              <div
-                className={`transition-all ${isSubmitting ? "w-6" : "w-0"} h-6`}
+            <div
+              className={`${
+                isSubmitting ? "pl-3" : "pl-0"
+              } flex items-center border rounded-md transition-all`}
+            >
+              <span
+                className={`h-6 transition-all ${isSubmitting ? "w-6" : "w-0"}`}
               >
                 <Spinner />
-              </div>
-              SAVE
-            </button>
+              </span>
+              <button className="flex items-center gap-2 text-xl p-3">
+                Save
+              </button>
+            </div>
             <Link href="/" className="text-xl border p-3 rounded-md">
-              CANCEL
+              Cancel
             </Link>
           </div>
         </div>
@@ -144,6 +152,7 @@ const ProductForm = () => {
               name="productType"
               className="max-w-[20rem] block w-full rounded-md border-0 py-2.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
             >
+              <option hidden>choose</option>
               {(
                 Object.keys(ProductTypes).filter((v) =>
                   isNaN(Number(v)),
@@ -210,8 +219,8 @@ const ProductForm = () => {
               />
             </>
           )}
-          {errors.endpointError && (
-            <p className="text-red-700">{errors.endpointError.message}</p>
+          {errors.error && (
+            <p className="text-red-700">{errors.error.message}</p>
           )}
         </div>
       </form>

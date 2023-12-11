@@ -1,14 +1,9 @@
 "use client";
 
-import { SubmitHandler, useForm } from "react-hook-form";
-import Link from "next/link";
-import { revalidateProducts } from "@/app/utils";
+import { deleteProducts } from "@/app/utils";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import Spinner from "@/app/components/UI/Spinner";
-
-interface Inputs {
-  products: string[] | string;
-  endpointError?: string;
-}
 
 interface productType {
   id: number;
@@ -20,77 +15,64 @@ interface productType {
   size?: number;
 }
 
-const ProductsList = ({ products }: { products: productType[] }) => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useForm<Inputs>();
+const ProductsList = ({ data }: { data: productType[] }) => {
+  const [errorMessage, setErrorMessage] = useState();
+  const router = useRouter();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const productIds: string[] = [];
-    console.log(data.products);
-    if (typeof data.products === "string") {
-      productIds.push(data.products);
-    } else {
-      productIds.concat(data.products);
-    }
-    const formData = new FormData();
-    for (let i = 0; i < productIds.length; i++) {
-      formData.append("idsToDelete[]", productIds[i]);
-    }
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_DB_HOST}/api/products/delete`, {
-        method: "POST",
-        body: formData,
-      });
-    } catch (err: any) {
-      setError("endpointError", { message: err.message });
-    }
-    await revalidateProducts();
+  const [isPending, startTransition] = useTransition();
+
+  const onSubmit = async (data: FormData) => {
+    startTransition(() => {
+      try {
+        deleteProducts(data);
+      } catch (e: any) {
+        setErrorMessage(e.message);
+      }
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form action={onSubmit}>
       <div className="flex flex-col md:flex-row gap-5 justify-between items-center text-white">
         <h2 className="text-4xl font-bold tracking-tight text-white">
           Product List
         </h2>
+        <p className="text-red-700">{errorMessage}</p>
         <div className="flex space-x-4">
-          <Link href="/addproduct" className="text-xl border p-3 rounded-md">
-            ADD
-          </Link>
           <button
-            disabled={!watch("products")?.length}
-            id="delete-product-btn"
-            className="flex items-center gap-2 text-xl border p-3 rounded-md "
+            type="button"
+            className="text-xl border p-3 rounded-md"
+            onClick={() => {
+              router.push("add-product");
+            }}
           >
-            <div
-              className={`transition-all ${isSubmitting ? "w-6" : "w-0"} h-6`}
-            >
-              <Spinner />
-            </div>
-            MASS DELETE
+            ADD
           </button>
+          <div
+            className={`${
+              isPending ? "pl-3" : "pl-0"
+            } flex items-center border rounded-md transition-all`}
+          >
+            <span className={`h-6 transition-all ${isPending ? "w-6" : "w-0"}`}>
+              <Spinner />
+            </span>
+            <button id="delete-product-btn" className="text-xl p-3">
+              MASS DELETE
+            </button>
+          </div>
         </div>
       </div>
-      {errors.endpointError && (
-        <p className="text-red-700">{errors.endpointError.message}</p>
-      )}
       <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        {products.length > 0 &&
-          products.map((product) => (
+        {data.length > 0 &&
+          data.map((product) => (
             <div
               key={product.id}
               className="group relative rounded-lg border p-4 flex "
             >
               <input
-                id="comments"
                 aria-describedby="comments-description"
                 type="checkbox"
-                {...register("products")}
+                name="idsToDelete[]"
                 value={product.id}
                 className="delete-checkbox h-4 w-4 rounded-lg border-gray-300 text-indigo-600 focus:ring-indigo-600"
               />

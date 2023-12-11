@@ -1,6 +1,6 @@
 import ProductsList from "@/app/components/lists/ProductsList";
 
-const Products = async () => {
+const ProductsPage = async () => {
   const getProducts = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_DB_HOST}/api/products`, {
       next: { tags: ["products"] },
@@ -9,7 +9,7 @@ const Products = async () => {
   };
   const products = await getProducts();
 
-  return <ProductsList products={products} />;
+  return <ProductsList data={products} />;
 };
 
-export default Products;
+export default ProductsPage;
